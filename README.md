@@ -4,8 +4,10 @@ A beautiful, modern React application that helps you transform your raw thoughts
 
 ## Features
 
-- ✨ **AI-Powered Email Generation** - Uses Gemini 2.0 Flash to craft professional emails
+- ✨ **AI-Powered Email Generation** - Uses Gemini 2.5 Flash to craft professional emails
 - 🎨 **Beautiful UI/UX** - Modern design with blues, whites, and greys color palette
+- 🌙 **Dark Mode** - Toggle between light and dark themes
+- 📱 **Mobile Responsive** - Fully optimized for all screen sizes
 - 🎭 **Multiple Tones** - Choose from Professional, Warm, Concise, Formal, Casual, or Persuasive
 - 📧 **Context Support** - Optionally include the email you're responding to for better context
 - 📋 **Copy to Clipboard** - One-click copy functionality for generated emails
@@ -25,12 +27,22 @@ A beautiful, modern React application that helps you transform your raw thoughts
 npm install
 ```
 
-2. Start the development server:
+2. Set up environment variables:
+   - Copy `.env.example` to `.env`:
+     ```bash
+     cp .env.example .env
+     ```
+   - Edit `.env` and add your Gemini API key:
+     ```
+     VITE_GEMINI_API_KEY=your_api_key_here
+     ```
+
+3. Start the development server:
 ```bash
 npm run dev
 ```
 
-3. Open your browser and navigate to `http://localhost:5173`
+4. Open your browser and navigate to `http://localhost:5173`
 
 ### Build for Production
 
@@ -61,24 +73,41 @@ The built files will be in the `dist` directory, ready for deployment to GitHub 
    git push -u origin main
    ```
 
-2. Enable GitHub Pages:
+2. Set up GitHub Secrets (for API key security):
+   - Go to your repository **Settings** → **Secrets and variables** → **Actions**
+   - Click **New repository secret**
+   - Name: `VITE_GEMINI_API_KEY`
+   - Value: Your Gemini API key
+   - Click **Add secret**
+
+3. Enable GitHub Pages:
    - Go to your repository **Settings** → **Pages**
    - Under **Source**, select **GitHub Actions**
    - Save
 
-3. That's it! GitHub Actions will automatically build and deploy your app.
+4. That's it! GitHub Actions will automatically build and deploy your app.
 
    Your app will be live at: `https://YOUR_USERNAME.github.io/YOUR_REPO_NAME/`
 
    See `DEPLOYMENT.md` for detailed instructions.
 
+## Environment Variables
+
+The app uses environment variables to securely store the Gemini API key:
+
+- `VITE_GEMINI_API_KEY` - Your Google Gemini API key
+
+**Important:** Never commit your `.env` file to version control. It's already in `.gitignore`.
+
+For GitHub Pages deployment, add `VITE_GEMINI_API_KEY` as a GitHub Secret (see Deployment section).
+
 ## Technologies Used
 
 - React 18
 - Vite
-- Tailwind CSS
+- Tailwind CSS (with Dark Mode support)
 - Lucide React (Icons)
-- Google Gemini API
+- Google Gemini API (Gemini 2.5 Flash)
 
 ## License
 

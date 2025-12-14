@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Send, Copy, Check, Mail, Sparkles, MessageSquare, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Send, Copy, Check, Mail, Sparkles, MessageSquare, User, Moon, Sun } from 'lucide-react';
 
-const GEMINI_API_KEY = 'AIzaSyD7aezdpE-DAmGxVd_dC5w9NZXDRL62_II';
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyD7aezdpE-DAmGxVd_dC5w9NZXDRL62_II';
 const GEMINI_MODEL = 'gemini-2.5-flash';
 
 const tones = [
@@ -21,6 +21,25 @@ export default function EmailWriter() {
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showContext, setShowContext] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    // Check localStorage or default to light mode
+    const saved = localStorage.getItem('darkMode');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  // Update dark mode class on body
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
 
   const generateEmail = async () => {
     if (!rawThoughts.trim()) return;
@@ -46,7 +65,7 @@ Instructions:
 - Respond with ONLY the email body content. Do not include any explanations or additional text outside of the email.`;
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
         {
           method: 'POST',
           headers: {
@@ -101,25 +120,40 @@ Instructions:
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors duration-300">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-slate-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200/20 dark:bg-blue-900/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-slate-300/20 dark:bg-slate-700/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
+      {/* Dark Mode Toggle */}
+      <div className="fixed top-6 right-6 z-50">
+        <button
+          onClick={toggleDarkMode}
+          className="w-12 h-12 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-md shadow-lg border border-white/50 dark:border-slate-700/50 flex items-center justify-center hover:scale-110 transition-all duration-200"
+          aria-label="Toggle dark mode"
+        >
+          {darkMode ? (
+            <Sun className="w-5 h-5 text-yellow-500" />
+          ) : (
+            <Moon className="w-5 h-5 text-slate-700" />
+          )}
+        </button>
       </div>
 
       {/* Header */}
       <div className="relative overflow-hidden z-10">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-slate-600/5"></div>
-        <div className="relative max-w-6xl mx-auto px-6 py-12">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-slate-600/5 dark:from-blue-600/10 dark:to-slate-600/10"></div>
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl mb-6 shadow-xl transform hover:scale-105 transition-transform duration-300">
-              <Mail className="w-10 h-10 text-white" />
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl mb-4 sm:mb-6 shadow-xl transform hover:scale-105 transition-transform duration-300">
+              <Mail className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
             </div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-800 via-blue-700 to-slate-800 bg-clip-text text-transparent mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-800 via-blue-700 to-slate-800 dark:from-slate-200 dark:via-blue-400 dark:to-slate-200 bg-clip-text text-transparent mb-3 sm:mb-4 px-4">
               Email Writing Assistant
             </h1>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto font-medium">
+            <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto font-medium px-4">
               Transform your thoughts into polished, professional emails with AI assistance
             </p>
           </div>
@@ -127,16 +161,16 @@ Instructions:
       </div>
 
       {/* Main Content - Vertical Layout */}
-      <div className="relative max-w-4xl mx-auto px-6 pb-12 z-10">
-        <div className="space-y-6">
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 pb-12 z-10">
+        <div className="space-y-4 sm:space-y-6">
           
           {/* Your Thoughts Section */}
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 hover:shadow-3xl transition-shadow duration-300">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center shadow-md">
-                <MessageSquare className="w-6 h-6 text-blue-600" />
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/50 dark:border-slate-700/50 hover:shadow-3xl transition-shadow duration-300">
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/50 dark:to-blue-800/50 rounded-xl flex items-center justify-center shadow-md">
+                <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <h2 className="text-2xl font-semibold text-slate-800">Your Thoughts</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 dark:text-slate-200">Your Thoughts</h2>
             </div>
             
             <textarea
@@ -144,54 +178,54 @@ Instructions:
               onChange={(e) => setRawThoughts(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Write what you want to communicate... Don't worry about grammar or structure - just get your ideas down."
-              className="w-full h-40 p-4 border-2 border-slate-200 rounded-xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/70 backdrop-blur-sm text-slate-700 placeholder-slate-400 font-medium"
+              className="w-full h-32 sm:h-40 p-4 border-2 border-slate-200 dark:border-slate-700 rounded-xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/70 dark:bg-slate-700/70 backdrop-blur-sm text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 font-medium"
             />
             
-            <div className="mt-4 text-sm text-slate-500 flex items-center gap-2">
-              <span className="text-blue-600">💡</span>
+            <div className="mt-4 text-xs sm:text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
+              <span className="text-blue-600 dark:text-blue-400">💡</span>
               <span>Tip: Press Cmd/Ctrl + Enter to generate your email</span>
             </div>
           </div>
 
           {/* Tone Selection */}
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 hover:shadow-3xl transition-shadow duration-300">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-slate-100 rounded-xl flex items-center justify-center shadow-md">
-                <Sparkles className="w-6 h-6 text-blue-600" />
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/50 dark:border-slate-700/50 hover:shadow-3xl transition-shadow duration-300">
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-100 to-slate-100 dark:from-blue-900/50 dark:to-slate-700/50 rounded-xl flex items-center justify-center shadow-md">
+                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <h2 className="text-2xl font-semibold text-slate-800">Email Tone</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 dark:text-slate-200">Email Tone</h2>
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {tones.map((toneOption) => (
                 <button
                   key={toneOption.value}
                   onClick={() => setTone(toneOption.value)}
-                  className={`p-4 rounded-xl border-2 transition-all duration-200 text-left transform hover:scale-[1.02] ${
+                  className={`p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 text-left transform hover:scale-[1.02] ${
                     tone === toneOption.value
-                      ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg scale-[1.02]'
-                      : 'border-slate-200 bg-white/70 hover:border-slate-300 hover:bg-white/90 hover:shadow-md'
+                      ? 'border-blue-500 dark:border-blue-400 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 shadow-lg scale-[1.02]'
+                      : 'border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-700/70 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-white/90 dark:hover:bg-slate-700/90 hover:shadow-md'
                   }`}
                 >
-                  <div className="font-semibold text-slate-800">{toneOption.label}</div>
-                  <div className="text-sm text-slate-600 mt-1">{toneOption.description}</div>
+                  <div className="font-semibold text-slate-800 dark:text-slate-200">{toneOption.label}</div>
+                  <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">{toneOption.description}</div>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Context Email Section */}
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 hover:shadow-3xl transition-shadow duration-300">
-            <div className="flex items-center justify-between mb-6">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/50 dark:border-slate-700/50 hover:shadow-3xl transition-shadow duration-300">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center shadow-md">
-                  <User className="w-6 h-6 text-slate-600" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700/50 dark:to-slate-600/50 rounded-xl flex items-center justify-center shadow-md">
+                  <User className="w-5 h-5 sm:w-6 sm:h-6 text-slate-600 dark:text-slate-400" />
                 </div>
-                <h2 className="text-2xl font-semibold text-slate-800">Context (Optional)</h2>
+                <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 dark:text-slate-200">Context (Optional)</h2>
               </div>
               <button
                 onClick={() => setShowContext(!showContext)}
-                className="text-blue-600 hover:text-blue-700 font-semibold transition-colors px-4 py-2 rounded-lg hover:bg-blue-50"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold transition-colors px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 text-sm sm:text-base"
               >
                 {showContext ? 'Hide' : 'Show'}
               </button>
@@ -199,14 +233,14 @@ Instructions:
             
             {showContext && (
               <>
-                <p className="text-slate-600 mb-4 font-medium">
+                <p className="text-slate-600 dark:text-slate-300 mb-4 font-medium text-sm sm:text-base">
                   Paste the email you're responding to for better context
                 </p>
                 <textarea
                   value={contextEmail}
                   onChange={(e) => setContextEmail(e.target.value)}
                   placeholder="Paste the original email here..."
-                  className="w-full h-32 p-4 border-2 border-slate-200 rounded-xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/70 backdrop-blur-sm text-slate-700 placeholder-slate-400 font-medium"
+                  className="w-full h-32 p-4 border-2 border-slate-200 dark:border-slate-700 rounded-xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/70 dark:bg-slate-700/70 backdrop-blur-sm text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 font-medium"
                 />
               </>
             )}
@@ -216,9 +250,9 @@ Instructions:
           <button
             onClick={generateEmail}
             disabled={isLoading || !rawThoughts.trim()}
-            className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white py-5 px-8 rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3 relative overflow-hidden group"
+            className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 dark:from-blue-500 dark:via-blue-600 dark:to-blue-500 text-white py-4 sm:py-5 px-6 sm:px-8 rounded-xl font-bold text-base sm:text-lg shadow-xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3 relative overflow-hidden group"
           >
-            <span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+            <span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-600 dark:to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
             {isLoading ? (
               <>
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin relative z-10"></div>
@@ -233,23 +267,23 @@ Instructions:
           </button>
 
           {/* Generated Email Section */}
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/50 min-h-96 hover:shadow-3xl transition-shadow duration-300">
-            <div className="flex items-center justify-between mb-6">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/50 dark:border-slate-700/50 min-h-96 hover:shadow-3xl transition-shadow duration-300">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center shadow-md">
-                  <Mail className="w-6 h-6 text-green-600" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/50 dark:to-emerald-800/50 rounded-xl flex items-center justify-center shadow-md">
+                  <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
                 </div>
-                <h2 className="text-2xl font-semibold text-slate-800">Generated Email</h2>
+                <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 dark:text-slate-200">Generated Email</h2>
               </div>
               
               {generatedEmail && (
                 <button
                   onClick={copyToClipboard}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 rounded-lg transition-all duration-200 text-slate-700 font-semibold shadow-md hover:shadow-lg transform hover:scale-105"
+                  className="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 hover:from-slate-200 hover:to-slate-300 dark:hover:from-slate-600 dark:hover:to-slate-500 rounded-lg transition-all duration-200 text-slate-700 dark:text-slate-200 font-semibold shadow-md hover:shadow-lg transform hover:scale-105 text-sm sm:text-base"
                 >
                   {copied ? (
                     <>
-                      <Check className="w-4 h-4 text-green-600" />
+                      <Check className="w-4 h-4 text-green-600 dark:text-green-400" />
                       <span>Copied!</span>
                     </>
                   ) : (
@@ -264,53 +298,62 @@ Instructions:
             
             {isLoading ? (
               <div className="flex flex-col items-center justify-center h-64">
-                <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-                <p className="text-slate-600 font-medium">Crafting your perfect email...</p>
+                <div className="w-12 h-12 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin mb-4"></div>
+                <p className="text-slate-600 dark:text-slate-300 font-medium">Crafting your perfect email...</p>
               </div>
             ) : generatedEmail ? (
-              <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-6 border-2 border-slate-200 shadow-inner">
-                <pre className="whitespace-pre-wrap font-sans text-slate-700 leading-relaxed text-[15px] font-medium">
+              <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-700 dark:to-slate-800 rounded-2xl p-4 sm:p-6 border-2 border-slate-200 dark:border-slate-600 shadow-inner">
+                <pre className="whitespace-pre-wrap font-sans text-slate-700 dark:text-slate-200 leading-relaxed text-sm sm:text-[15px] font-medium">
                   {generatedEmail}
                 </pre>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-64 text-slate-400">
-                <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mb-4 shadow-inner">
-                  <Mail className="w-10 h-10 opacity-50" />
+              <div className="flex flex-col items-center justify-center h-64 text-slate-400 dark:text-slate-500">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 rounded-2xl flex items-center justify-center mb-4 shadow-inner">
+                  <Mail className="w-8 h-8 sm:w-10 sm:h-10 opacity-50" />
                 </div>
-                <p className="text-lg font-semibold text-slate-500">Your polished email will appear here</p>
-                <p className="text-sm mt-2 text-slate-400">Enter your thoughts and select a tone to get started</p>
+                <p className="text-base sm:text-lg font-semibold text-slate-500 dark:text-slate-400">Your polished email will appear here</p>
+                <p className="text-xs sm:text-sm mt-2 text-slate-400 dark:text-slate-500">Enter your thoughts and select a tone to get started</p>
               </div>
             )}
           </div>
 
           {/* Tips */}
-          <div className="bg-gradient-to-br from-blue-50 via-slate-50 to-blue-50 rounded-3xl p-6 border-2 border-blue-100 shadow-xl">
-            <h3 className="font-bold text-slate-800 mb-4 text-lg flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-blue-600" />
+          <div className="bg-gradient-to-br from-blue-50 via-slate-50 to-blue-50 dark:from-blue-900/20 dark:via-slate-800/50 dark:to-blue-900/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border-2 border-blue-100 dark:border-blue-800/50 shadow-xl">
+            <h3 className="font-bold text-slate-800 dark:text-slate-200 mb-3 sm:mb-4 text-base sm:text-lg flex items-center gap-2">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
               Pro Tips
             </h3>
-            <ul className="text-sm text-slate-600 space-y-2.5 font-medium">
+            <ul className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 space-y-2 sm:space-y-2.5 font-medium">
               <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">•</span>
+                <span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
                 <span>Be specific about what you want to achieve</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">•</span>
+                <span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
                 <span>Include key details even if roughly written</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">•</span>
+                <span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
                 <span>Try different tones to see what works best</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">•</span>
+                <span className="text-blue-600 dark:text-blue-400 mt-1">•</span>
                 <span>Add context for more personalized responses</span>
               </li>
             </ul>
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="relative z-10 py-6 sm:py-8 border-t border-slate-200/50 dark:border-slate-700/50 mt-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 font-medium">
+            Made by <span className="text-blue-600 dark:text-blue-400 font-semibold">Daniyal</span>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
