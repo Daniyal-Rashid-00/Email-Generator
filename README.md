@@ -49,17 +49,28 @@ The built files will be in the `dist` directory, ready for deployment to GitHub 
 3. Vercel will automatically detect Vite and configure the build settings
 4. Deploy!
 
-### Deploy to GitHub Pages
+### Deploy to GitHub Pages (No Local Installation Required!)
 
-1. Install `gh-pages`: `npm install --save-dev gh-pages`
-2. Add to `package.json`:
-```json
-"scripts": {
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d dist"
-}
-```
-3. Run `npm run deploy`
+1. Push your code to GitHub:
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+2. Enable GitHub Pages:
+   - Go to your repository **Settings** → **Pages**
+   - Under **Source**, select **GitHub Actions**
+   - Save
+
+3. That's it! GitHub Actions will automatically build and deploy your app.
+
+   Your app will be live at: `https://YOUR_USERNAME.github.io/YOUR_REPO_NAME/`
+
+   See `DEPLOYMENT.md` for detailed instructions.
 
 ## Technologies Used
 
