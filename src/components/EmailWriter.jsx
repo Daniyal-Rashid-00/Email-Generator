@@ -65,6 +65,11 @@ export default function EmailWriter() {
     setGeneratedEmail('');
     
     try {
+      // Check if API key is available
+      if (!GEMINI_API_KEY || GEMINI_API_KEY === 'your_api_key_here') {
+        throw new Error('API key not configured. Please set VITE_GEMINI_API_KEY environment variable.');
+      }
+
       const contextPart = contextEmail.trim() 
         ? `\n\nContext - I am responding to this email:\n"${contextEmail}"\n\n`
         : '';
@@ -81,39 +86,52 @@ Instructions:
 - Do not include a subject line
 - Respond with ONLY the email body content. Do not include any explanations or additional text outside of the email.`;
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: prompt
-              }]
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+      
+      console.log('Making API request to:', apiUrl.replace(GEMINI_API_KEY, '***'));
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: prompt
             }]
-          })
-        }
-      );
+          }]
+        })
+      });
 
+      const responseData = await response.json();
+      
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        console.error('API Error Response:', responseData);
+        
+        // Provide more specific error messages
+        if (response.status === 403) {
+          throw new Error('403 Forbidden: API key may be invalid, restricted, or blocked. Please check:\n1. API key is correct in Google Cloud Console\n2. API key restrictions allow requests from this domain\n3. API key has not been leaked/blocked\n4. Gemini API is enabled for your project');
+        } else if (response.status === 400) {
+          throw new Error(`400 Bad Request: ${responseData.error?.message || 'Invalid request format'}`);
+        } else if (response.status === 429) {
+          throw new Error('429 Rate Limit: Too many requests. Please try again later.');
+        } else {
+          throw new Error(`API error ${response.status}: ${responseData.error?.message || 'Unknown error'}`);
+        }
       }
 
-      const data = await response.json();
-      
-      if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-        const emailText = data.candidates[0].content.parts[0].text;
+      if (responseData.candidates && responseData.candidates[0] && responseData.candidates[0].content) {
+        const emailText = responseData.candidates[0].content.parts[0].text;
         setGeneratedEmail(emailText.trim());
       } else {
-        throw new Error('Unexpected response format');
+        console.error('Unexpected response format:', responseData);
+        throw new Error('Unexpected response format from API');
       }
     } catch (error) {
       console.error('Error generating email:', error);
       const errorMessage = error.message || 'Unknown error';
-      setGeneratedEmail(`Sorry, there was an error generating your email: ${errorMessage}. Please check the console for more details.`);
+      setGeneratedEmail(`Sorry, there was an error generating your email:\n\n${errorMessage}\n\nPlease check the browser console for more details.`);
     } finally {
       setIsLoading(false);
     }
