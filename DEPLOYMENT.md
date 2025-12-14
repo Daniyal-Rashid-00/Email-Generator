@@ -49,6 +49,19 @@ The GitHub Actions workflow will:
 
 No local `npm install` needed!
 
+## Important: Update Base Path
+
+**If your repository name is NOT `Email-Generator`**, you need to update the base path in `vite.config.js`:
+
+```js
+base: '/YOUR_REPO_NAME/', // Change this to match your repository name
+```
+
+For example, if your repo is `my-email-app`, change it to:
+```js
+base: '/my-email-app/',
+```
+
 ## Troubleshooting
 
 If the deployment fails:
