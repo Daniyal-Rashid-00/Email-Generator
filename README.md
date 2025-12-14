@@ -1,10 +1,10 @@
 # Email Writer - AI-Powered Email Assistant
 
-A beautiful, modern React application that helps you transform your raw thoughts into polished, professional emails using Google's Gemini AI.
+A beautiful, modern React application that helps you transform your raw thoughts into polished, professional emails using AI.
 
 ## Features
 
-- ✨ **AI-Powered Email Generation** - Uses Gemini 2.5 Flash to craft professional emails
+- ✨ **AI-Powered Email Generation** - Uses OpenRouter.ai with free Gemini models to craft professional emails
 - 🎨 **Beautiful UI/UX** - Modern design with blues, whites, and greys color palette
 - 🌙 **Dark Mode** - Toggle between light and dark themes
 - 📱 **Mobile Responsive** - Fully optimized for all screen sizes
@@ -32,9 +32,9 @@ npm install
      ```bash
      cp .env.example .env
      ```
-   - Edit `.env` and add your Gemini API key:
+   - Edit `.env` and add your OpenRouter API key:
      ```
-     VITE_GEMINI_API_KEY=your_api_key_here
+     VITE_OPENROUTER_API_KEY=your_api_key_here
      ```
 
 3. Start the development server:
@@ -76,8 +76,8 @@ The built files will be in the `dist` directory, ready for deployment to GitHub 
 2. Set up GitHub Secrets (for API key security):
    - Go to your repository **Settings** → **Secrets and variables** → **Actions**
    - Click **New repository secret**
-   - Name: `VITE_GEMINI_API_KEY`
-   - Value: Your Gemini API key
+   - Name: `VITE_OPENROUTER_API_KEY`
+   - Value: Your OpenRouter API key (get it from https://openrouter.ai/keys)
    - Click **Add secret**
 
 3. Enable GitHub Pages:
@@ -93,13 +93,15 @@ The built files will be in the `dist` directory, ready for deployment to GitHub 
 
 ## Environment Variables
 
-The app uses environment variables to securely store the Gemini API key:
+The app uses environment variables to securely store the OpenRouter API key:
 
-- `VITE_GEMINI_API_KEY` - Your Google Gemini API key
+- `VITE_OPENROUTER_API_KEY` - Your OpenRouter.ai API key (get it from https://openrouter.ai/keys)
 
 **Important:** Never commit your `.env` file to version control. It's already in `.gitignore`.
 
-For GitHub Pages deployment, add `VITE_GEMINI_API_KEY` as a GitHub Secret (see Deployment section).
+For GitHub Pages deployment, add `VITE_OPENROUTER_API_KEY` as a GitHub Secret (see Deployment section).
+
+**Note:** OpenRouter provides free access to various AI models. The app uses `google/gemini-2.0-flash-exp:free` by default.
 
 ## Technologies Used
 
@@ -107,7 +109,7 @@ For GitHub Pages deployment, add `VITE_GEMINI_API_KEY` as a GitHub Secret (see D
 - Vite
 - Tailwind CSS (with Dark Mode support)
 - Lucide React (Icons)
-- Google Gemini API (Gemini 2.5 Flash)
+- OpenRouter.ai API (with free Gemini models)
 
 ## License
 

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Send, Copy, Check, Mail, Sparkles, MessageSquare, User, Moon, Sun } from 'lucide-react';
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyD7aezdpE-DAmGxVd_dC5w9NZXDRL62_II';
-const GEMINI_MODEL = 'gemini-2.5-flash';
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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';
+const OPENROUTER_MODEL = 'google/gemini-2.0-flash-exp:free'; // Using free Gemini model via OpenRouter
 
 const tones = [
   { value: 'professional', label: 'Professional', description: 'Clear and business-appropriate' },
@@ -66,8 +66,8 @@ export default function EmailWriter() {
     
     try {
       // Check if API key is available
-      if (!GEMINI_API_KEY || GEMINI_API_KEY === 'your_api_key_here') {
-        throw new Error('API key not configured. Please set VITE_GEMINI_API_KEY environment variable.');
+      if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY === 'your_api_key_here') {
+        throw new Error('API key not configured. Please set VITE_OPENROUTER_API_KEY environment variable.');
       }
 
       const contextPart = contextEmail.trim() 
@@ -86,21 +86,26 @@ Instructions:
 - Do not include a subject line
 - Respond with ONLY the email body content. Do not include any explanations or additional text outside of the email.`;
 
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+      const apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
       
-      console.log('Making API request to:', apiUrl.replace(GEMINI_API_KEY, '***'));
+      console.log('Making API request to OpenRouter');
       
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'HTTP-Referer': window.location.origin, // Optional: for analytics
+          'X-Title': 'Email Writer App' // Optional: for analytics
         },
         body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }]
+          model: OPENROUTER_MODEL,
+          messages: [
+            {
+              role: 'user',
+              content: prompt
+            }
+          ]
         })
       });
 
@@ -110,19 +115,21 @@ Instructions:
         console.error('API Error Response:', responseData);
         
         // Provide more specific error messages
-        if (response.status === 403) {
-          throw new Error('403 Forbidden: API key may be invalid, restricted, or blocked. Please check:\n1. API key is correct in Google Cloud Console\n2. API key restrictions allow requests from this domain\n3. API key has not been leaked/blocked\n4. Gemini API is enabled for your project');
+        if (response.status === 401) {
+          throw new Error('401 Unauthorized: API key is invalid. Please check your OpenRouter API key.');
+        } else if (response.status === 403) {
+          throw new Error('403 Forbidden: API key may be restricted or invalid. Please check your OpenRouter API key.');
         } else if (response.status === 400) {
           throw new Error(`400 Bad Request: ${responseData.error?.message || 'Invalid request format'}`);
         } else if (response.status === 429) {
-          throw new Error('429 Rate Limit: Too many requests. Please try again later.');
+          throw new Error('429 Rate Limit: Too many requests. Free tier limit reached. Please try again later.');
         } else {
           throw new Error(`API error ${response.status}: ${responseData.error?.message || 'Unknown error'}`);
         }
       }
 
-      if (responseData.candidates && responseData.candidates[0] && responseData.candidates[0].content) {
-        const emailText = responseData.candidates[0].content.parts[0].text;
+      if (responseData.choices && responseData.choices[0] && responseData.choices[0].message) {
+        const emailText = responseData.choices[0].message.content;
         setGeneratedEmail(emailText.trim());
       } else {
         console.error('Unexpected response format:', responseData);
