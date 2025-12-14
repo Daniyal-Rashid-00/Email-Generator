@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Send, Copy, Check, Mail, Sparkles, MessageSquare, User, Moon, Sun } from 'lucide-react';
 
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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';
-const OPENROUTER_MODEL = 'google/gemini-2.0-flash-exp:free'; // Using free Gemini model via OpenRouter
+const OPENROUTER_MODEL = 'deepseek/deepseek-chat-v3.1:free'; // Using free DeepSeek model via OpenRouter
 
 const tones = [
   { value: 'professional', label: 'Professional', description: 'Clear and business-appropriate' },

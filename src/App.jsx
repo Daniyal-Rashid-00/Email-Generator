@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import EmailWriter from './components/EmailWriter'
 
 function App() {
