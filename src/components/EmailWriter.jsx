@@ -21,20 +21,37 @@ export default function EmailWriter() {
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showContext, setShowContext] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => {
-    // Check localStorage or default to light mode
-    const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : false;
-  });
+  const [darkMode, setDarkMode] = useState(false);
 
-  // Update dark mode class on body
+  // Initialize dark mode from localStorage and update DOM
+  useEffect(() => {
+    // Check localStorage safely
+    try {
+      const saved = localStorage.getItem('darkMode');
+      if (saved) {
+        const isDark = JSON.parse(saved);
+        setDarkMode(isDark);
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+        }
+      }
+    } catch (error) {
+      console.error('Error reading dark mode preference:', error);
+    }
+  }, []);
+
+  // Update dark mode class on body when darkMode changes
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    try {
+      localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    } catch (error) {
+      console.error('Error saving dark mode preference:', error);
+    }
   }, [darkMode]);
 
   const toggleDarkMode = () => {
