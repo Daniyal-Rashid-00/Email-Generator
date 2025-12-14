@@ -76,7 +76,8 @@ Instructions:
       }
     } catch (error) {
       console.error('Error generating email:', error);
-      setGeneratedEmail('Sorry, there was an error generating your email. Please try again.');
+      const errorMessage = error.message || 'Unknown error';
+      setGeneratedEmail(`Sorry, there was an error generating your email: ${errorMessage}. Please check the console for more details.`);
     } finally {
       setIsLoading(false);
     }
