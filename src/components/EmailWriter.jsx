@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Send, Copy, Check, Mail, Sparkles, MessageSquare, User, Moon, Sun } from 'lucide-react';
 
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY // || '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';
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
 const OPENROUTER_MODEL = 'deepseek/deepseek-chat-v3.1:free'; // Using free DeepSeek model via OpenRouter
 
 const tones = [
