@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Send, Copy, Check, Mail, Sparkles, MessageSquare, User, Moon, Sun } from 'lucide-react';
 
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
-const OPENROUTER_MODEL = 'google/gemini-2.0-flash-exp:free'; // Using free DeepSeek model via OpenRouter
+const OPENROUTER_MODEL = 'google/gemini-2.0-flash-001'; // Using free DeepSeek model via OpenRouter
 
 const tones = [
   { value: 'professional', label: 'Professional', description: 'Clear and business-appropriate' },
