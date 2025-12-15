@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Send, Copy, Check, Mail, Sparkles, MessageSquare, User, Moon, Sun } from 'lucide-react';
 
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
-const OPENROUTER_MODEL = 'allenai/olmo-3-32b-think:free';
+const OPENROUTER_MODEL = 'gemini-2.5-flash-lite';
 
 const tones = [
   { value: 'professional', label: 'Professional', description: 'Clear and business-appropriate' },
