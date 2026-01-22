@@ -1,3 +1,7 @@
+## Overview
+
+**Live Demo:** https://daniyal-rashid-00.github.io/Email-Generator/
+
 # Email Writer - AI-Powered Email Assistant
 
 A beautiful, modern React application that helps you transform your raw thoughts into polished, professional emails using AI.
