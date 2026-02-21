@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Send, Copy, Check, Mail, Sparkles, MessageSquare, User, Moon, Sun } from 'lucide-react';
 
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
-const OPENROUTER_MODEL = 'tngtech/deepseek-r1t2-chimera:free';
+const OPENROUTER_MODEL = 'deepseek/deepseek-r1-0528:free';
 
 const tones = [
   { value: 'professional', label: 'Professional', description: 'Clear and business-appropriate' },
@@ -244,8 +244,8 @@ Instructions:
                   key={toneOption.value}
                   onClick={() => setTone(toneOption.value)}
                   className={`p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 text-left transform hover:scale-[1.02] ${tone === toneOption.value
-                      ? 'border-blue-500 dark:border-blue-400 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 shadow-lg scale-[1.02]'
-                      : 'border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-700/70 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-white/90 dark:hover:bg-slate-700/90 hover:shadow-md'
+                    ? 'border-blue-500 dark:border-blue-400 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 shadow-lg scale-[1.02]'
+                    : 'border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-700/70 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-white/90 dark:hover:bg-slate-700/90 hover:shadow-md'
                     }`}
                 >
                   <div className="font-semibold text-slate-800 dark:text-slate-200">{toneOption.label}</div>
